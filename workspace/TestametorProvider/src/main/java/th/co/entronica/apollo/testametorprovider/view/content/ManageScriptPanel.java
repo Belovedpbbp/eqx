@@ -33,6 +33,7 @@ public class ManageScriptPanel extends javax.swing.JPanel {
    private String backUpContent = "";
    private String line = "";
    private ManageScriptController msc;
+   private int lastSelectIndex;
 
    public ManageScriptPanel(String pathPro) {
    }
@@ -131,7 +132,6 @@ public class ManageScriptPanel extends javax.swing.JPanel {
 
       editFileText.setColumns(20);
       editFileText.setRows(5);
-      editFileText.setEnabled(false);
       jScrollPane2.setViewportView(editFileText);
 
       btnCancelEditScript.setText("cancel");
@@ -192,51 +192,48 @@ public class ManageScriptPanel extends javax.swing.JPanel {
    }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelEditScriptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelEditScriptActionPerformed
-      int returnYesNoOptionpane = matchTextField();
-      if (returnYesNoOptionpane == 1 || returnYesNoOptionpane == -1) {
-         editFileText.setText(editFileText.getText());
+       int returnYesNoOptionpane = matchTextField();
+       if (returnYesNoOptionpane == 1 || returnYesNoOptionpane == -1) {
+          editFileText.setText(editFileText.getText());
 
-         editFileText.setEnabled(true);
-         manageList.setEnabled(false);
-      } else {
-         editFileText.setText(backUpContent);
+          editFileText.setEnabled(true);
+          manageList.setEnabled(false);
+       } else {
+          editFileText.setText(backUpContent);
 
-         editFileText.setEnabled(false);
-         manageList.setEnabled(true);
-         btnNewScript.setEnabled(true);
-      }
+          editFileText.setEnabled(false);
+          manageList.setEnabled(true);
+          btnNewScript.setEnabled(true);
+       }
     }//GEN-LAST:event_btnCancelEditScriptActionPerformed
 
     private void manageListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_manageListMouseClicked
 
-       if (evt.getClickCount() == 2) {
-          editFileText.setVisible(true);
-          editFileText.setEnabled(true);
-          manageList.setEnabled(false);
-          btnNewScript.setEnabled(false);
-          appendTextField();
+//       if (evt.getClickCount() == 2) {
+//          editFileText.setVisible(true);
+//          editFileText.setEnabled(true);
+//          manageList.setEnabled(false);
+//          btnNewScript.setEnabled(false);
+//          appendTextField();
+//
+//       } else if (evt.getClickCount() == 1) {
+       
+       checkLastUpdate();
+       manageList.setVisible(true);
+       appendTextField();
+       lastSelectIndex = manageList.getSelectedIndex();
 
-       } else if (evt.getClickCount() == 1) {
-          manageList.setVisible(true);
-          appendTextField();
-       }
+
+
+//       }
+
+
     }//GEN-LAST:event_manageListMouseClicked
 
     private void btnSaveEditScriptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveEditScriptActionPerformed
-       try {
-          String content = editFileText.getText();
-          FileWriter fw = new FileWriter(fileEdit.getAbsoluteFile());
-          BufferedWriter bw = new BufferedWriter(fw);
-          bw.write(content);
-          bw.close();
-          backUpContent = editFileText.getText();
-          editFileText.setEnabled(false);
-
-       } catch (IOException e) {
-          e.printStackTrace();
-       }
-       manageList.setEnabled(true);
-       btnNewScript.setEnabled(true);
+       saveFile();
+       
+       
     }//GEN-LAST:event_btnSaveEditScriptActionPerformed
 
     private void btnNewScriptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewScriptActionPerformed
@@ -252,31 +249,8 @@ public class ManageScriptPanel extends javax.swing.JPanel {
 
    private void btnOkScriptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkScriptActionPerformed
 
-      String path = pathProject + "/TestScript/" + txtFScriptName.getText() + ".txt";
-      fileEdit = new File(path);
+      checkFileExists();
 
-      FileWriter writer;
-      try {
-         if (fileEdit.exists()) {
-
-            JOptionPane.showMessageDialog(this,
-                    "This file already exists.",
-                    "Warning",
-                    JOptionPane.WARNING_MESSAGE);
-         } else {
-
-            writer = new FileWriter(fileEdit, true);
-            writer.write("");
-            writer.close();
-
-            System.out.println("Write success!");
-            dialogNewScript.dispose();
-         }
-         initValue();
-
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
    }//GEN-LAST:event_btnOkScriptActionPerformed
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton btnCancelEditScript;
@@ -352,5 +326,59 @@ public class ManageScriptPanel extends javax.swing.JPanel {
    public void initValue() {
       MainController mainController = MasterController.getInstance().getMainController();
       addListManage(mainController.getProjectPath() + "/" + mainController.getProjectName());
+   }
+
+   private void checkFileExists() {
+      String path = pathProject + "/TestScript/" + txtFScriptName.getText() + ".txt";
+      fileEdit = new File(path);
+
+      FileWriter writer;
+      try {
+         if (fileEdit.exists()) {
+
+            JOptionPane.showMessageDialog(this,
+                    "This file already exists.",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+         } else {
+
+            writer = new FileWriter(fileEdit, true);
+            writer.write("");
+            writer.close();
+
+            System.out.println("Write success!");
+            dialogNewScript.dispose();
+         }
+         initValue();
+
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+   }
+
+   private void checkLastUpdate() {
+      if(matchTextField()==0){
+         saveFile();
+      }
+   }
+
+   private void saveFile() {
+      if(fileEdit==null)
+         return;
+   
+      try {
+          String content = editFileText.getText();
+          FileWriter fw = new FileWriter(fileEdit.getAbsoluteFile());
+          BufferedWriter bw = new BufferedWriter(fw);
+          bw.write(content);
+          bw.close();
+          backUpContent = editFileText.getText();
+        
+
+       } catch (IOException e) {
+          e.printStackTrace();
+       }
+//       manageList.setEnabled(true);
+//       btnNewScript.setEnabled(true);
    }
 }

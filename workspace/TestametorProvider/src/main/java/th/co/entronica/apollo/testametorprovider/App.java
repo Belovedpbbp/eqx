@@ -1,8 +1,6 @@
 package th.co.entronica.apollo.testametorprovider;
 
-import javax.swing.ImageIcon;
 import th.co.entronica.apollo.testametorprovider.controller.MasterController;
-import th.co.entronica.apollo.testametorprovider.view.NewJFrame;
 
 /**
  * Hello world!

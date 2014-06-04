@@ -27,24 +27,52 @@ public class NewJFrame extends javax.swing.JFrame {
    private void initComponents() {
 
       jPanel1 = new javax.swing.JPanel();
+      jToolBar1 = new javax.swing.JToolBar();
+      jPanel2 = new javax.swing.JPanel();
+      jMenuBar1 = new javax.swing.JMenuBar();
+      jMenu1 = new javax.swing.JMenu();
+      jMenu2 = new javax.swing.JMenu();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-      getContentPane().setLayout(new java.awt.GridLayout());
+      getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
       jPanel1.setBackground(new java.awt.Color(255, 0, 0));
+
+      jToolBar1.setBackground(new java.awt.Color(255, 237, 0));
+      jToolBar1.setFloatable(false);
+      jToolBar1.setRollover(true);
+
+      jPanel2.setBackground(new java.awt.Color(0, 255, 242));
+      jPanel2.setLayout(new java.awt.GridLayout());
 
       javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
       jPanel1.setLayout(jPanel1Layout);
       jPanel1Layout.setHorizontalGroup(
          jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 400, Short.MAX_VALUE)
+         .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+         .addGroup(jPanel1Layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+            .addContainerGap())
       );
       jPanel1Layout.setVerticalGroup(
          jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 300, Short.MAX_VALUE)
+         .addGroup(jPanel1Layout.createSequentialGroup()
+            .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(12, 12, 12)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
+            .addContainerGap())
       );
 
       getContentPane().add(jPanel1);
+
+      jMenu1.setText("File");
+      jMenuBar1.add(jMenu1);
+
+      jMenu2.setText("Edit");
+      jMenuBar1.add(jMenu2);
+
+      setJMenuBar(jMenuBar1);
 
       pack();
    }// </editor-fold>//GEN-END:initComponents
@@ -84,6 +112,11 @@ public class NewJFrame extends javax.swing.JFrame {
       });
    }
    // Variables declaration - do not modify//GEN-BEGIN:variables
+   private javax.swing.JMenu jMenu1;
+   private javax.swing.JMenu jMenu2;
+   private javax.swing.JMenuBar jMenuBar1;
    private javax.swing.JPanel jPanel1;
+   private javax.swing.JPanel jPanel2;
+   private javax.swing.JToolBar jToolBar1;
    // End of variables declaration//GEN-END:variables
 }

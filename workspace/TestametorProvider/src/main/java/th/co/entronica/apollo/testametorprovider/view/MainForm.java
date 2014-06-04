@@ -26,14 +26,13 @@ public class MainForm extends javax.swing.JFrame {
 
    public MainForm(MainController mainController) {
       initComponents();
-//      this.setSize(550, 550);
       this.mainController = mainController;
 
       Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
       int w = this.getSize().width;
       int h = this.getSize().height;
 
-      jToolBar1.setSize(w, 40);
+//      jToolBar1.setSize(10, 40);
 //      int x = (dim.width - w) / 2;
 //      int y = (dim.height - h) / 2;
 //      this.setLocation(x, y);
@@ -172,6 +171,11 @@ public class MainForm extends javax.swing.JFrame {
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
       setTitle("Command  Window");
       setExtendedState(MAXIMIZED_BOTH);
+      addComponentListener(new java.awt.event.ComponentAdapter() {
+         public void componentResized(java.awt.event.ComponentEvent evt) {
+            formComponentResized(evt);
+         }
+      });
       getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
       jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -231,13 +235,15 @@ public class MainForm extends javax.swing.JFrame {
       });
       jToolBar1.add(btnExecuteScript);
 
-      jPanel1.add(jToolBar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 660, 30));
+      jPanel1.add(jToolBar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 640, 30));
 
-      secondPN.setLayout(new java.awt.GridLayout());
-      jPanel1.add(secondPN, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 36, 640, -1));
+      secondPN.setBackground(new java.awt.Color(249, 46, 46));
+      secondPN.setLayout(new java.awt.GridLayout(1, 0));
+      jPanel1.add(secondPN, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 36, -1, -1));
 
-      thirdPN.setLayout(new java.awt.GridLayout());
-      jPanel1.add(thirdPN, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 36, 640, -1));
+      thirdPN.setBackground(new java.awt.Color(244, 253, 79));
+      thirdPN.setLayout(new java.awt.GridLayout(1, 0));
+      jPanel1.add(thirdPN, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 36, -1, -1));
 
       getContentPane().add(jPanel1);
 
@@ -293,8 +299,6 @@ public class MainForm extends javax.swing.JFrame {
 
     private void btnNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewProjectActionPerformed
        newProject();
-
-
     }//GEN-LAST:event_btnNewProjectActionPerformed
 
     private void menuNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewProjectActionPerformed
@@ -354,6 +358,17 @@ public class MainForm extends javax.swing.JFrame {
 
    }//GEN-LAST:event_menuExecuteScriptActionPerformed
 
+   private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+      int w = this.getSize().width;
+      int h = this.getSize().height;
+      jToolBar1.setSize(w, 30);
+      secondPN.setSize(w, h);
+      thirdPN.setSize(w, h);
+      manageScriptPanel = MasterController.getInstance().getManageScriptPanel();
+      manageScriptPanel.setSize(w, h);
+
+      // TODO add your handling code here:
+   }//GEN-LAST:event_formComponentResized
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton btnExecuteScript;
    private javax.swing.JButton btnManageScript;
