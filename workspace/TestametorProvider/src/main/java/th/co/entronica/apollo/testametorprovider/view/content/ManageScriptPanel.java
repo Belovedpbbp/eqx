@@ -8,9 +8,16 @@ package th.co.entronica.apollo.testametorprovider.view.content;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import th.co.entronica.apollo.testametorprovider.controller.MainController;
@@ -29,10 +36,13 @@ public class ManageScriptPanel extends javax.swing.JPanel {
     private DefaultListModel model;
     private String textArea;
     private String pathProject;
+    private File dest;
     private File fileEdit;
     private String backUpContent = "";
     private String line = "";
     private ManageScriptController msc;
+    private InputStream input = null;
+    private OutputStream output = null;
 //   private int lastSelectIndex;
 
     public ManageScriptPanel(String pathPro) {
@@ -41,7 +51,6 @@ public class ManageScriptPanel extends javax.swing.JPanel {
     public ManageScriptPanel(ManageScriptController manageScrtipController) {
         msc = manageScrtipController;
         initComponents();
-
     }
 
     /**
@@ -65,6 +74,8 @@ public class ManageScriptPanel extends javax.swing.JPanel {
         btnCancelEditScript = new javax.swing.JButton();
         btnSaveEditScript = new javax.swing.JButton();
         btnNewScript = new javax.swing.JButton();
+        btnRemoveScript = new javax.swing.JButton();
+        btnCopyScript = new javax.swing.JButton();
 
         dialogNewScript.setTitle("New Project");
 
@@ -128,11 +139,21 @@ public class ManageScriptPanel extends javax.swing.JPanel {
                 manageListMouseClicked(evt);
             }
         });
+        manageList.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                manageListKeyReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(manageList);
 
         editFileText.setColumns(20);
         editFileText.setRows(5);
         editFileText.setEnabled(false);
+        editFileText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                editFileTextKeyReleased(evt);
+            }
+        });
         jScrollPane2.setViewportView(editFileText);
 
         btnCancelEditScript.setText("cancel");
@@ -156,21 +177,39 @@ public class ManageScriptPanel extends javax.swing.JPanel {
             }
         });
 
+        btnRemoveScript.setText("Remove Script");
+        btnRemoveScript.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveScriptActionPerformed(evt);
+            }
+        });
+
+        btnCopyScript.setText("Copy Script");
+        btnCopyScript.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCopyScriptActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
                         .addComponent(btnNewScript)
-                        .addGap(9, 9, 9)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(9, 274, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnRemoveScript)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCopyScript)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
                         .addComponent(btnSaveEditScript)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCancelEditScript)))
@@ -182,12 +221,14 @@ public class ManageScriptPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 393, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancelEditScript)
                     .addComponent(btnSaveEditScript)
-                    .addComponent(btnNewScript))
+                    .addComponent(btnNewScript)
+                    .addComponent(btnRemoveScript)
+                    .addComponent(btnCopyScript))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -201,7 +242,7 @@ public class ManageScriptPanel extends javax.swing.JPanel {
 
     private void manageListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_manageListMouseClicked
 
-        if (evt.getClickCount() == 2) {
+        if (evt.getClickCount() == 1) {
             editFileText.setEnabled(true);
             btnNewScript.setEnabled(false);
             btnSaveEditScript.setEnabled(true);
@@ -209,15 +250,6 @@ public class ManageScriptPanel extends javax.swing.JPanel {
             appendTextField();
             btnNewScript.setEnabled(true);
 
-        } else if (evt.getClickCount() == 1) {
-
-            editFileText.setEnabled(false);
-            manageList.setEnabled(true);
-            manageList.setVisible(true);
-            btnSaveEditScript.setEnabled(false);
-            checkLastUpdate();
-            appendTextField();
-            btnNewScript.setEnabled(true);
         }
     }//GEN-LAST:event_manageListMouseClicked
 
@@ -238,15 +270,42 @@ public class ManageScriptPanel extends javax.swing.JPanel {
    }//GEN-LAST:event_btnCancelScriptActionPerformed
 
    private void btnOkScriptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkScriptActionPerformed
-
        checkFileExists();
-
    }//GEN-LAST:event_btnOkScriptActionPerformed
+
+    private void manageListKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_manageListKeyReleased
+        editFileText.setEnabled(true);
+        btnSaveEditScript.setEnabled(true);
+        checkLastUpdate();
+        appendTextField();
+        btnNewScript.setEnabled(true);
+        if (evt.getKeyCode() == 10) {
+            editFileText.requestFocus();
+        }
+
+        System.out.println("--- > " + evt.getKeyCode());
+    }//GEN-LAST:event_manageListKeyReleased
+
+    private void editFileTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_editFileTextKeyReleased
+        if (evt.getKeyCode() == 27) {
+            manageList.requestFocus();
+        }
+    }//GEN-LAST:event_editFileTextKeyReleased
+
+    private void btnRemoveScriptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveScriptActionPerformed
+    }//GEN-LAST:event_btnRemoveScriptActionPerformed
+
+    private void btnCopyScriptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCopyScriptActionPerformed
+        copyScript();
+
+    }//GEN-LAST:event_btnCopyScriptActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelEditScript;
     private javax.swing.JButton btnCancelScript;
+    private javax.swing.JButton btnCopyScript;
     private javax.swing.JButton btnNewScript;
     private javax.swing.JButton btnOkScript;
+    private javax.swing.JButton btnRemoveScript;
     private javax.swing.JButton btnSaveEditScript;
     private javax.swing.JDialog dialogNewScript;
     private javax.swing.JTextArea editFileText;
@@ -331,7 +390,6 @@ public class ManageScriptPanel extends javax.swing.JPanel {
                         "Warning",
                         JOptionPane.WARNING_MESSAGE);
             } else {
-
                 writer = new FileWriter(fileEdit, true);
                 writer.write("");
                 writer.close();
@@ -373,7 +431,23 @@ public class ManageScriptPanel extends javax.swing.JPanel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//       manageList.setEnabled(true);
-//       btnNewScript.setEnabled(true);
+    }
+
+    private void copyScript() {
+        dest = new File(fileEdit.toString().split(".txt")[0] + "copy.txt");
+        try {
+            input = new FileInputStream(fileEdit);
+            output = new FileOutputStream(dest);
+            byte[] buf = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = input.read(buf)) > 0) {
+                output.write(buf, 0, bytesRead);
+            }
+            input.close();
+            output.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ManageScriptPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        initValue();
     }
 }

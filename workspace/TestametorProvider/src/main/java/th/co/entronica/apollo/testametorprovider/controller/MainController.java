@@ -25,10 +25,10 @@ public class MainController {
     private boolean openProject = false;
     private String projectName;
     private String projectPath;
-    private String configPath;
+    private String configPathString;
     private File configPathFile;
     private Properties prop;
-    private InputStream input = null;
+    private InputStream input;
 
     public void newProject(MainForm mainForm) {
     }
@@ -43,10 +43,11 @@ public class MainController {
             newPro.setDialogTitle("New Projcet");
             newPro.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             prop = new Properties();
-            input = new FileInputStream("src/main/resources/config.properties");
+            input = new FileInputStream("src\\main\\resources\\config.properties");
             prop.load(input);
-            configPath = prop.getProperty("path");
-            if (configPath == null || configPath.equals("")) {
+            configPathString = prop.getProperty("path");
+            System.out.println("------------ " + configPathString);
+            if (configPathString == null || configPathString.equals("")) {
                 if (newPro.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     projectPath = newPro.getSelectedFile().toString();
 
@@ -54,7 +55,7 @@ public class MainController {
                     System.out.println("No Selection");
                 }
             } else {
-                configPathFile = new File(configPath);
+                configPathFile = new File(configPathString);
                 newPro.setCurrentDirectory(configPathFile);
                 if (newPro.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     projectPath = newPro.getSelectedFile().toString();
@@ -63,6 +64,7 @@ public class MainController {
                     System.out.println("No Selection");
                 }
             }
+
         } catch (IOException ex) {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -74,36 +76,35 @@ public class MainController {
      */
     public void showDialogOpenProject(MainForm mainForm) {
         JFileChooser openPro = new JFileChooser();
-
         try {
             openPro.setDialogTitle("Open Project");
             openPro.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             prop = new Properties();
             input = new FileInputStream("src/main/resources/config.properties");
-//            input = getClass().getResourceAsStream("./src/main/resources/config.properties");
             prop.load(input);
-            configPath = prop.getProperty("path");
-            if (configPath == null || configPath.equals("")) {
+            configPathString = prop.getProperty("path");
+            if (configPathString == null || configPathString.equals("")) {
                 if (openPro.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     projectPath = openPro.getCurrentDirectory().toString();
                     projectName = openPro.getSelectedFile().getName();
-
                     System.out.println(JFileChooser.APPROVE_OPTION + " Choose File");
                 } else {
                     System.out.println(JFileChooser.CANCEL_OPTION + "Error, No Select");
                 }
             } else {
-                configPathFile = new File(configPath);
+                configPathFile = new File(configPathString);
                 openPro.setCurrentDirectory(configPathFile);
                 if (openPro.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     projectPath = openPro.getCurrentDirectory().toString();
                     projectName = openPro.getSelectedFile().getName();
-
                     System.out.println(JFileChooser.APPROVE_OPTION + " Choose File");
                 } else {
                     System.out.println(JFileChooser.CANCEL_OPTION + " Error, No Select");
                 }
+
             }
+            mainForm.writeFileProperties();
+            System.out.println(projectPath + " ---- " + projectName);
         } catch (IOException ex) {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
         }
